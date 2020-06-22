@@ -1,0 +1,62 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.all {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.clock{
+    width:320px;
+    text-align: center;
+    margin-left:auto;
+    margin-right:auto;
+    transition: all 1s;
+}
+
+.rili{
+    margin-left: auto;
+    margin-right: auto;
+    width: 350px;
+    border:1px #ddd solid;
+}
+ul,li,ol{
+    list-style: none;
+}
+.riliHeader{
+    height: 50px;
+    border-bottom:1px #ddd solid;
+    background: #eee;
+}
+.riliHeader li, .riliContent li{
+    float: left;
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 16px;
+    text-align: center;
+    border:1px #ddd solid;
+}
+.riliContent{
+    height: 300px;
+}
+.riliContent li.on{
+    color: #f00;
+}
+.fl{
+    float: left;}
+.fr{
+    float: right;}
+#previous,#next{cursor: pointer; margin:15px;width:15px; height:15px;border-radius: 15px;background: white;display: block;text-align:center;line-height: 15px;}
+.riliTop .showTime{
+    height: 50px;
+    line-height: 50px;
+    margin-left: 50%;
+    display: inline-block;
+    position: relative;
+    left: -65px;
+}
+.riliTop{
+    background: #55a532;
+}

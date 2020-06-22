@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cn.mapper.AuthorityMapper">
+
+	<!-- 查询全部菜单信息 -->
+	<select id="findAuthority" resultType="com.cn.pojo.Authority">
+		select * from `user-authority` a 
+		LEFT JOIN `user` b on a.user_id=b.user_id 
+		LEFT JOIN authority c on a.authority_id=c.authority_id 
+		where b.user_id=#{user_id} and authority_type=1
+	</select>
+	
+	<!-- 查询按钮信息 -->
+	<select id="findButton" resultType="com.cn.pojo.Authority">
+		select * from `user-authority` a 
+		LEFT JOIN `user` b on a.user_id=b.user_id 
+		LEFT JOIN authority c on a.authority_id=c.authority_id
+		where b.user_id=#{user_id} and authority_type=2 and authority_gui=#{authority_gui}
+	</select>
+	
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.mapper.WorkingOffMapper">
+	
+	<resultMap type="com.cn.pojo.WorkingOff" id="findWorkingOff">
+		<id property="workingoff_id" column="workingoff_id"/>
+		<result property="workingoff_name" column="workingoff_name"/>
+		<result property="workingoff_department_id" column="workingoff_department_id"/>
+		<result property="workingoff_begin_time" column="workingoff_begin_time"/>
+		<result property="workingoff_end_time" column="workingoff_end_time"/>
+		<result property="workingoff_context" column="workingoff_context"/>
+		<result property="workingoff_time" column="workingoff_time"/>
+		<result property="workingoff_state" column="workingoff_state"/>
+		<association property="state" javaType="State" resultMap="findState"></association>
+		<association property="department" javaType="Department" resultMap="findDepartment"></association>
+	</resultMap>
+	<resultMap type="com.cn.pojo.State" id="findState">
+		<id property="state_id" column="state_id"></id>
+		<result property="state_name" column="state_name"/>
+	</resultMap>
+	<resultMap type="com.cn.pojo.Department" id="findDepartment">
+		<id property="department_id" column="department_id"/>
+		<result property="department_name" column="department_name"/>
+	</resultMap>
+	
+	<!-- 查询全部信息列表 -->
+	<select id="findWorkingOff" resultMap="findWorkingOff">
+		SELECT * from workingoff a,department b,state c 
+		where 
+		a.workingoff_department_id=b.department_id 
+		and 
+		a.workingoff_state=c.state_id	
+		and 
+		a.workingoff_name=#{workingoff_name}	
+	</select>
+	
+	<!-- 查询全部调休信息列表 -->
+	<select id="findWorkingOffAll" resultMap="findWorkingOff">
+		SELECT * from workingoff a,department b,state c 
+		where 
+		a.workingoff_department_id=b.department_id 
+		and 
+		a.workingoff_state=c.state_id	
+	</select>
+	
+	<!-- 查询当前登录用户部门下的所有调休信息列表 -->
+	<select id="findWorkingOffByDepartment" resultMap="findWorkingOff">
+		SELECT * from workingoff a,department b,state c 
+		where 
+		a.workingoff_department_id=b.department_id 
+		and 
+		a.workingoff_state=c.state_id	
+		and
+		a.workingoff_department_id=#{workingoff_department_id}
+	</select>
+	
+	<!-- 查询需要进行审核的信息列表 -->
+	<select id="findWorkingOffByState" resultMap="findWorkingOff">
+		SELECT * from workingoff a,department b,state c 
+		where 
+		a.workingoff_department_id=b.department_id 
+		and 
+		a.workingoff_state=c.state_id	
+		and
+		a.workingoff_state=4
+	</select>
+	
+	<!-- 查询单个需要审核的信息 -->
+	<select id="findWorkingOffByShen" resultMap="findWorkingOff">
+		SELECT * from workingoff where workingoff_id=#{workingoff_id}
+			
+	</select>
+	
+	<!-- 进行审核 -->
+	<update id="updateWorkingOffByShen">
+		update workingoff set 
+		workingoff_state=#{workingoff_state}
+		where 
+		workingoff_id=#{workingoff_id}
+	</update>
+	
+	
+	<!-- 申请调休 -->
+	<insert id="addWorkingOff">
+		insert into workingoff(
+		workingoff_name,
+		workingoff_department_id,
+		workingoff_begin_time,
+		workingoff_end_time,
+		workingoff_context,
+		workingoff_time)
+		values(
+		#{workingoff_name},
+		#{workingoff_department_id},
+		#{workingoff_begin_time},
+		#{workingoff_end_time},
+		#{workingoff_context},
+		#{workingoff_time}
+		)
+	</insert>
+	
+	<!-- 根据编号进行查询 -->
+	<select id="findWorkingOffById" resultType="com.cn.pojo.WorkingOff">
+		select * from workingoff where workingoff_id=#{workingoff_id}
+	</select>
+	
+	<!-- 修改信息 -->
+	<update id="updateWorkingOff">
+		update workingoff set 
+		workingoff_begin_time=#{workingoff_begin_time},
+		workingoff_end_time=#{workingoff_end_time},
+		workingoff_context=#{workingoff_context}
+		where 
+		workingoff_id=#{workingoff_id}
+	</update>
+	
+	<!-- 删除调休申请 -->
+	<delete id="deleteWorkingOff">
+		delete from workingoff where workingoff_id=#{workingoff_id}
+	</delete>
+	
+	<!-- 提交调休审核 -->
+	<update id="update">
+		update workingoff set workingoff_state=4 where workingoff_id=#{workingoff_id}
+	</update>
+	
+</mapper>

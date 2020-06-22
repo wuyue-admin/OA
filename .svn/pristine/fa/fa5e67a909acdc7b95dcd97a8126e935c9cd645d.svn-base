@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cn.mapper.AttendanceMapper">
+	
+	<resultMap type="com.cn.pojo.Attendance" id="findAttendance">
+		<id property="attendance_id" column="attendance_id"/>
+		<result property="attendance_time" column="attendance_time"/>
+		<result property="attendance_state" column="attendance_state"/>
+		<result property="attendance_user_id" column="attendance_user_id"/>
+		<result property="attendance_date" column="attendance_date"/>
+		<association property="user" javaType="User" resultMap="findUser"></association>
+		<association property="attendanceState" javaType="AttendanceState" resultMap="findAttendanceState"></association>
+	</resultMap>
+	<resultMap type="com.cn.pojo.User" id="findUser">
+		<id property="user_id" column="user_id"/>
+		<result property="user_name" column="user_name"/>
+		<result property="user_userName" column="user_userName"/>
+		<result property="user_password" column="user_password"/>
+		<result property="user_salt" column="user_salt"/>
+		<result property="user_sex" column="user_sex"/>
+		<result property="user_department_id" column="user_department_id"/>
+		<result property="user_technical_id" column="user_technical_id"/>
+		<result property="user_time" column="user_time"/>
+		<result property="user_sarly" column="user_sarly"/>
+		<result property="user_image" column="user_image"/>
+		<result property="user_up" column="user_up"/>
+	</resultMap>
+	<resultMap type="com.cn.pojo.AttendanceState" id="findAttendanceState">
+		<id property="attendance_state_id" column="attendance_state_id"/>
+		<result property="attendance_state_name" column="attendance_state_name"/>
+	</resultMap>
+	
+
+	<!-- 打卡签到 -->
+	<insert id="signIn">
+		insert into attendance(attendance_time,attendance_state,attendance_user_id)
+		values(#{attendance_time},#{attendance_state},#{attendance_user_id})
+	</insert>
+	
+	<!-- 打卡签退 -->
+	<insert id="signOut">
+		insert into attendance(attendance_time,attendance_state,attendance_user_id)
+		values(#{attendance_time},#{attendance_state},#{attendance_user_id})
+	</insert>
+	
+	<!-- 查看全部考勤列表 -->
+	<select id="findAttendanceList" resultMap="findAttendance">
+		select * from attendance,attendance_state,`user` 
+		where attendance.attendance_state=attendance_state.attendance_state_id 
+		and attendance.attendance_user_id=`user`.user_id
+	</select>
+	
+	<!-- 删除 -->
+	<delete id="delAttendance">
+		delete from attendance where attendance_id=#{attendance_id}
+	</delete>
+	
+	<!-- 查询全部打卡类型 -->
+	<select id="findAttendanceState" resultType="com.cn.pojo.AttendanceState">
+		select * from attendance_state
+	</select>
+	
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cn.mapper.FriendMapper">
+	
+	<!-- 查询全部好友列表 -->
+	<select id="findFriend" resultType="com.cn.pojo.Friend">
+		select * from friend
+	</select>
+	
+	<!-- 根据编号查询单个好友并打开聊天页面 -->
+	<select id="findFriendById" resultType="com.cn.pojo.Friend"> 
+		select * from friend where friend_id=#{friend_id}
+	</select>
+	
+</mapper>

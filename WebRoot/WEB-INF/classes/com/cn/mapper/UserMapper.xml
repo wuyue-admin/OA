@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cn.mapper.UserMapper">
+
+	<resultMap type="com.cn.pojo.User" id="findUser">
+		<id property="user_id" column="user_id"/>
+		<result property="user_name" column="user_name"/>
+		<result property="user_userName" column="user_userName"/>
+		<result property="user_password" column="user_password"/>
+		<result property="user_salt" column="user_salt"/>
+		<result property="user_sex" column="user_sex"/>
+		<result property="user_department_id" column="user_department_id"/>
+		<result property="user_technical_id" column="user_technical_id"/>
+		<result property="user_time" column="user_time"/>
+		<result property="user_sarly" column="user_sarly"/>
+		<result property="user_image" column="user_image"/>
+		<result property="user_up" column="user_up"/>
+		<association property="department" javaType="Department" resultMap="findDepartment"></association>
+		<association property="technocal" javaType="Technocal" resultMap="findTechnocal"></association>
+	</resultMap>
+	<resultMap type="com.cn.pojo.Department" id="findDepartment">
+		<id property="department_id" column="department_id"/>
+		<result property="department_name" column="department_name"/>
+	</resultMap>
+	<resultMap type="com.cn.pojo.Technocal" id="findTechnocal">
+		<id property="technocal_id" column="technocal_id"/>
+		<result property="technocal_name" column="technocal_name"/>
+		<result property="technocal_shu" column="technocal_shu"/>
+	</resultMap>
+	
+	<!-- 登录 -->
+	<select id="findUser" resultType="com.cn.pojo.User">
+		select * from user where user_userName=#{user_userName}
+	</select>
+	
+	<!-- 注册 -->
+	<insert id="addUser">
+		insert into `user`(user_name,user_userName,user_password,user_salt,user_image)
+		values(#{user_name},#{user_userName},#{user_password},#{user_salt}.#{user_image})
+	</insert>
+	
+	<!-- 查询职称 -->
+	<select id="findTechnocal" resultType="com.cn.pojo.User">
+		select * from technocal a 
+		LEFT JOIN `user-technocal` b on a.technocal_id=b.technocal_id 
+		LEFT JOIN `user` c on b.user_id=c.user_id 
+		where c.user_id=#{user_id}
+	</select>
+	
+	<!-- 查询权限 -->
+	<select id="findAuthority" resultType="com.cn.pojo.User">
+		select * from authority a 
+		LEFT JOIN `user-authority` b on a.authority_id=b.authority_id 
+		LEFT JOIN `user` c on b.user_id=c.user_id 
+		where c.user_id=#{user_id}
+	</select>
+	
+	<!-- 查询全部用户信息列表 -->
+	<select id="findUserList" resultMap="findUser">
+		select * from `user` a,department b,technocal c 
+		where a.user_department_id=b.department_id
+		and a.user_technical_id=c.technocal_id
+	</select>
+	
+	<!-- 查询全部部门赋值给添加用户列表 -->
+	<select id="findDepartment" resultType="com.cn.pojo.Department">
+		select * from department
+	</select>
+	
+	<!-- 查询全部职称列表 -->
+	<select id="findTechnocalList" resultType="com.cn.pojo.Technocal">
+		select * from technocal
+	</select>
+	
+	<!-- 根据部门查询不含有主管的职称列表 -->
+	<select id="findTechnocalListNotAdmin" resultType="com.cn.pojo.Technocal">
+		select * from technocal where technocal_id!=2
+	</select>
+	
+	<!-- 查询上级 -->
+	<select id="findTechnocalAll" resultType="com.cn.pojo.Technocal">
+		select technocal_shu from technocal where technocal_id=#{technocal_id}
+	</select>
+	
+	<!-- 查询上级 -->
+	<select id="findTechnocalByShu" resultType="com.cn.pojo.Technocal">
+		select * from technocal where technocal_id=#{technocal_shu}
+	</select>
+	
+	<!-- 判断是否已经有老板 -->
+	<select id="bossCount" resultType="int">
+		select count(*) from udt where technocal_id=1
+	</select>
+	
+	<!-- 判断是否这个部门是否已经有主管 -->
+	<select id="adminCount" resultType="int">
+		select count(*) from udt where technocal_id=2 and department_id=#{department_id}
+	</select>
+	
+	<!-- 添加用户 -->
+	<insert id="addUserNew">
+		insert into `user`
+		(user_name,
+		user_userName,
+		user_up,
+		user_sex,
+		user_salt,
+		user_time,
+		user_image,
+		user_sarly,
+		user_password,
+		user_technical_id,
+		user_department_id)
+		values(#{user_name},
+		#{user_userName},
+		#{user_up},
+		#{user_sex},
+		#{user_salt},
+		#{user_time},
+		#{user_image},
+		#{user_sarly},
+		#{user_password},
+		#{user_technical_id},
+		#{user_department_id})
+	</insert>
+	
+	<!-- 根据用户编号获取用户个人详细信息 -->
+	<select id="findUserById" resultType="com.cn.pojo.User">
+		select * from user where user_id = #{user_id}
+	</select>
+	
+	<!-- 修改用户信息 -->
+	<update id="updateUser">
+		update user set 
+		user_name=#{user_name},
+		user_userName=#{user_userName},
+		user_up=#{user_up},
+		user_sex=#{user_sex},
+		user_salt=#{user_salt},
+		user_time=#{user_time},
+		user_image=#{user_image},
+		user_sarly=#{user_sarly},
+		user_password=#{user_password},
+		user_technical_id=#{user_technical_id},
+		user_department_id=#{user_department_id}
+		where user_id=#{user_id}
+	</update>
+	
+	<!-- 删除用户信息 -->
+	<delete id="delUser">
+		delete from user where user_id = #{user_id}
+	</delete>
+	
+	<!-- 查询全部职称信息列表 -->
+	<select id="findTechnocall" resultType="com.cn.pojo.Technocal">
+		select * from technocal
+	</select>
+	
+	<!-- 查询全部上级信息列表 -->
+	<select id="findUp" resultType="com.cn.pojo.Technocal">
+		select * from technocal
+	</select>
+	
+	<!-- 查询全部总条数 -->
+	<select id="userCount" resultType="int">
+		select count(*) from `user`
+	</select>
+	
+</mapper>

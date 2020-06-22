@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cn.mapper.LeaveMapper">
+
+	<resultMap type="com.cn.pojo.Leave" id="findLeave">
+		<id property="leave_id" column="leave_id"/>
+		<result property="leave_name" column="leave_name"/>
+		<result property="leave_department_id" column="leave_department_id"/>
+		<result property="leave_start_time" column="leave_start_time"/>
+		<result property="leave_end_time" column="leave_end_time"/>
+		<result property="leave_type" column="leave_type"/>
+		<result property="leave_context" column="leave_context"/>
+		<result property="leave_time" column="leave_time"/>
+		<association property="leaveState" javaType="LeaveState" resultMap="findLeaveState" />
+		<association property="department" javaType="Department" resultMap="findDepartment" />
+		<association property="state" javaType="State" resultMap="findState" />
+		<association property="user" javaType="User" resultMap="findUser" />
+	</resultMap>
+	
+	<resultMap type="com.cn.pojo.LeaveState" id="findLeaveState">
+		<id property="leave_state_id" column="leave_state_id"/>
+		<result property="leave_state_name" column="leave_state_name"/>
+	</resultMap>
+	
+	<resultMap type="com.cn.pojo.Department" id="findDepartment">
+		<id property="department_id" column="department_id"/>
+		<result property="department_name" column="department_name"/>
+	</resultMap>
+	
+	<resultMap type="com.cn.pojo.State" id="findState">
+		<id property="state_id" column="state_id"></id>
+		<result property="state_name" column="state_name"/>
+	</resultMap>
+	
+	<resultMap type="com.cn.pojo.User" id="findUser">
+		<id property="user_id" column="user_id"/>
+		<result property="user_name" column="user_name"/>
+		<result property="user_userName" column="user_userName"/>
+		<result property="user_password" column="user_password"/>
+		<result property="user_salt" column="user_salt"/>
+		<result property="user_sex" column="user_sex"/>
+		<result property="user_department_id" column="user_department_id"/>
+		<result property="user_technical_id" column="user_technical_id"/>
+		<result property="user_time" column="user_time"/>
+		<result property="user_sarly" column="user_sarly"/>
+		<result property="user_image" column="user_image"/>
+		<result property="user_up" column="user_up"/>
+	</resultMap>
+	
+	<!-- 创建请假单 -->
+	<insert id="addLeave">
+		insert into `leave`
+		(leave_name,
+		leave_department_id,
+		leave_start_time,
+		leave_end_time,
+		leave_type,
+		leave_context,
+		leave_time)
+		values
+		(#{leave_name},
+		#{leave_department_id},
+		#{leave_start_time},
+		#{leave_end_time},
+		#{leave_type},
+		#{leave_context},
+		#{leave_time})
+	</insert>
+	
+	<!-- 查询全部请假单信息列表 -->
+	<select id="findLeave" resultMap="findLeave">
+		select * from `leave` a,leave_state b,department c,state d,`user` e
+		where a.leave_type=b.leave_state_id 
+		and 
+		a.leave_department_id=c.department_id
+		and
+		a.leave_state=d.state_id
+		and 
+		a.leave_name=e.user_id
+		and 
+		a.leave_name=#{leave_name}
+	</select>
+	
+	<!-- 查看请假单 -->
+	<select id="findLeaveById" resultType="com.cn.pojo.Leave">
+		select * from `leave` where leave_id=#{leave_id}
+	</select>
+	
+	<!-- 编辑请假单 -->
+	<update id="updateLeaveById">
+		update `leave` set 
+		leave_context=#{leave_context},
+		leave_start_time=#{leave_start_time},
+		leave_end_time=#{leave_end_time} 
+		where 
+		leave_id=#{leave_id}
+	</update>
+	
+	<!-- 删除请假单 -->
+	<delete id="delLeave">
+		delete from `leave` where leave_id=#{leave_id}
+	</delete>
+	
+	<!-- 查询请假单总条数 -->
+	<select id="count" resultType="int">
+		select count(*) from `leave`
+	</select>
+	
+	<!-- 提交请假申请 -->
+	<update id="update">
+		update `leave` set leave_state=4 where leave_id=#{leave_id}
+	</update>
+	
+	<!-- 查询全部请假 -->
+	<select id="findLeaveAll" resultMap="findLeave">
+		select * from `leave` a,leave_state b,department c,state d,`user` e
+		where a.leave_type=b.leave_state_id 
+		and 
+		a.leave_department_id=c.department_id
+		and
+		a.leave_state=d.state_id
+		and 
+		a.leave_name=e.user_id
+	</select>
+	
+	<!-- 查询部门请假 -->
+	<select id="findLeaveByDepartment" resultMap="findLeave">
+		select * from `leave` a,leave_state b,department c,state d,`user` e
+		where a.leave_type=b.leave_state_id 
+		and 
+		a.leave_department_id=c.department_id
+		and
+		a.leave_state=d.state_id
+		and 
+		a.leave_name=e.user_id
+		and 
+		a.leave_department_id=#{leave_department_id}
+	</select>
+	
+	<!-- 查询需审核的请假单 -->
+	<select id="findLeaveByState" resultMap="findLeave">
+		select * from `leave` a,leave_state b,department c,state d,`user` e
+		where a.leave_type=b.leave_state_id 
+		and 
+		a.leave_department_id=c.department_id
+		and
+		a.leave_state=d.state_id
+		and 
+		a.leave_name=e.user_id
+		and 
+		a.leave_state=4
+	</select>
+	
+	<!-- 查询进行审核的信息 -->
+	<select id="findLeaveByShen" resultType="com.cn.pojo.Leave">
+		select * from `leave` where leave_id=#{leave_id}
+	</select>
+	
+	<!-- 进行审核 -->
+	<update id="updateLeaveByShen">
+		update `leave` set 
+		leave_state=#{leave_state}
+		where 
+		leave_id=#{leave_id}
+	</update>
+</mapper>

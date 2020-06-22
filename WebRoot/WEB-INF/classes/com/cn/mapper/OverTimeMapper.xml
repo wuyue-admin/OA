@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.mapper.OverTimeMapper">
+	
+	<resultMap type="com.cn.pojo.OverTime" id="findOverTime">
+		<id property="overtime_id" column="overtime_id"/>
+		<result property="overtime_user_id" column="overtime_user_id"/>
+		<result property="overtime_begin_time" column="overtime_begin_time"/>
+		<result property="overtime_end_time" column="overtime_end_time"/>
+		<association property="user" javaType="User" resultMap="findUser"></association>
+		<association property="state" javaType="State" resultMap="findState"></association>
+		<association property="department" javaType="Department" resultMap="findDepartment" />
+	</resultMap>
+	
+	<resultMap type="com.cn.pojo.User" id="findUser">
+		<id property="user_id" column="user_id"/>
+		<result property="user_name" column="user_name"/>
+		<result property="user_userName" column="user_userName"/>
+		<result property="user_password" column="user_password"/>
+		<result property="user_salt" column="user_salt"/>
+		<result property="user_sex" column="user_sex"/>
+		<result property="user_department_id" column="user_department_id"/>
+		<result property="user_technical_id" column="user_technical_id"/>
+		<result property="user_time" column="user_time"/>
+		<result property="user_sarly" column="user_sarly"/>
+		<result property="user_image" column="user_image"/>
+		<result property="user_up" column="user_up"/>
+	</resultMap>
+	
+	<resultMap type="com.cn.pojo.State" id="findState">
+		<id property="state_id" column="state_id"></id>
+		<result property="state_name" column="state_name"/>
+	</resultMap>
+	
+	<resultMap type="com.cn.pojo.Department" id="findDepartment">
+		<id property="department_id" column="department_id"/>
+		<result property="department_name" column="department_name"/>
+	</resultMap>
+	
+	<!-- 查询全部当前用户的加班申请信息列表 -->
+	<select id="findOverTime" resultMap="findOverTime">
+		select * from overtime,`user`,state,department 
+		where 
+		overtime.overtime_user_id=`user`.user_id 
+		and 
+		overtime.overtime_state=state.state_id
+		and
+		overtime.overtime_department_id=department.department_id
+		and
+		overtime.overtime_user_id=#{overtime_user_id}
+	</select>
+	
+	<!-- 查询全部加班申请信息列表 -->
+	<select id="findOverTimeAll" resultMap="findOverTime">
+		select * from overtime,`user`,state,department 
+		where 
+		overtime.overtime_user_id=`user`.user_id 
+		and 
+		overtime.overtime_state=state.state_id
+		and
+		overtime.overtime_department_id=department.department_id
+	</select>
+	
+	<!-- 查询全部部门下加班申请信息列表 -->
+	<select id="findOverTimeByDepartment" resultMap="findOverTime">
+		select * from overtime,`user`,state,department 
+		where 
+		overtime.overtime_user_id=`user`.user_id 
+		and 
+		overtime.overtime_state=state.state_id
+		and
+		overtime.overtime_department_id=department.department_id
+		and 
+		overtime.overtime_department_id=#{overtime_department_id}
+	</select>
+	
+	<!-- 查询需要审核的加班申请 -->
+	<select id="findOverTimeByShen" resultMap="findOverTime">
+		select * from overtime,`user`,state,department 
+		where 
+		overtime.overtime_user_id=`user`.user_id 
+		and 
+		overtime.overtime_state=state.state_id
+		and
+		overtime.overtime_department_id=department.department_id
+		and 
+		overtime.overtime_state=4
+	</select>
+	
+	<!-- 根据编号查询单个加班申请 -->
+	<select id="findOverTimeByS" resultType="com.cn.pojo.OverTime">
+		select * from overtime where overtime_id=#{overtime_id}
+	</select>
+	
+	<!-- 进行审核 -->
+	<update id="updateOverTimeBySh">
+		update overtime set overtime_state=#{overtime_state} where overtime_id=#{overtime_id}
+	</update>
+	
+	<!-- 添加加班申请 -->
+	<insert id="addOverTime">
+		insert into overtime
+		(overtime_user_id,
+		overtime_begin_time,
+		overtime_end_time,
+		overtime_department_id)
+		values
+		(#{overtime_user_id},
+		#{overtime_begin_time},
+		#{overtime_end_time},
+		#{overtime_department_id})
+	</insert>
+	
+	<!-- 根据编号获取加班申请 -->
+	<select id="findOverTimeById" resultType="com.cn.pojo.OverTime">
+		select * from overtime where overtime_id=#{overtime_id}
+	</select>
+	
+	<!-- 修改加班申请 -->
+	<update id="updateOverTime">
+		update overtime set 
+		overtime_begin_time=#{overtime_begin_time},
+		overtime_end_time=#{overtime_end_time}
+		where
+		overtime_id=#{overtime_id}
+	</update>
+	
+	<!-- 删除加班申请 -->
+	<delete id="delOverTime">
+		delete from overtime where overtime_id=#{overtime_id}
+	</delete>
+	
+	<!-- 查询申请加班的总条数 -->
+	<select id="count" resultType="int">
+		select count(*) from overtime
+	</select>
+	
+	<!-- 提交审核 -->
+	<update id="update">
+		update overtime set overtime_state=4 where overtime_id=#{overtime_id}
+	</update>
+	
+	<!-- 查询当前用户是否具有调休资格 -->
+	<select id="countById" resultType="int">
+		select count(*) from overtime where overtime_user_id=#{overtime_user_id} and overtime_state=2
+	</select>
+	
+</mapper>

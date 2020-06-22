@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cn.mapper.AfficheMapper">
+
+	<resultMap type="com.cn.pojo.Affiche" id="findAffiche">
+		<id property="affiche_id" column="affiche_id"/>
+		<result property="affiche_name" column="affiche_name"/>
+		<result property="affiche_time" column="affiche_time"/>
+		<result property="affiche_user_id" column="affiche_user_id"/>
+		<association property="user" javaType="User" resultMap="findUser"></association>
+	</resultMap>
+	<resultMap type="com.cn.pojo.User" id="findUser">
+		<id property="user_id" column="user_id"/>
+		<result property="user_name" column="user_name"/>
+		<result property="user_userName" column="user_userName"/>
+		<result property="user_password" column="user_password"/>
+		<result property="user_salt" column="user_salt"/>
+		<result property="user_sex" column="user_sex"/>
+		<result property="user_department_id" column="user_department_id"/>
+		<result property="user_technical_id" column="user_technical_id"/>
+		<result property="user_time" column="user_time"/>
+		<result property="user_sarly" column="user_sarly"/>
+		<result property="user_image" column="user_image"/>
+		<result property="user_up" column="user_up"/>
+	</resultMap>
+	
+	<!-- 查询全部公告信息列表 -->
+	<select id="findAffiche" resultMap="findAffiche">
+		select * from affiche a,`user` b where a.affiche_user_id=b.user_id
+	</select>
+	
+	<!-- 查询全部公告信息列表 -->
+	<select id="findAfficheAll" resultType="com.cn.pojo.Affiche">
+		select * from affiche 
+	</select>
+	
+	<!-- 添加新的公告信息 -->
+	<insert id="addAffiche">
+		insert into affiche(affiche_name,affiche_time,affiche_user_id)
+		values(#{affiche_name},#{affiche_time},#{affiche_user_id})
+	</insert>
+	
+	<!-- 根据公告编号查询单个公告信息 -->
+	<select id="findAfficheById" resultType="com.cn.pojo.Affiche">
+		select * from affiche where affiche_id=#{affiche_id}
+	</select>
+	
+	<!-- 修改公告信息 -->
+	<update id="updateAffiche">
+		update affiche set affiche_name=#{affiche_name}
+		 where affiche_id=#{affiche_id}
+	</update>
+	
+	<!-- 删除公告信息 -->
+	<delete id="delAffiche">
+		delete from affiche where affiche_id=#{affiche_id}
+	</delete>
+	
+</mapper>
